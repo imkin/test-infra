@@ -33,7 +33,7 @@ dirty="$(git status --porcelain)"
 if [[ -n ${dirty} ]]; then
   echo "Tree not clean:"
   echo "${dirty}"
-  exit 1
+#  exit 1
 fi
 
 TREE="$(dirname "${BASH_SOURCE[0]}")/.."
@@ -41,12 +41,12 @@ TREE="$(dirname "${BASH_SOURCE[0]}")/.."
 DATE="$(date +v%Y%m%d)"
 TAG="${DATE}-$(git describe --tags --always --dirty)"
  
-make -C "${TREE}/images/kubekins-e2e" push
-K8S=experimental make -C "${TREE}/images/kubekins-e2e" push
-K8S=1.13 make -C "${TREE}/images/kubekins-e2e" push
-K8S=1.12 make -C "${TREE}/images/kubekins-e2e" push
-K8S=1.11 make -C "${TREE}/images/kubekins-e2e" push
-K8S=1.10 make -C "${TREE}/images/kubekins-e2e" push
+make -C "${TREE}/images/kubekins-e2e" build
+K8S=experimental make -C "${TREE}/images/kubekins-e2e" build
+K8S=1.13 make -C "${TREE}/images/kubekins-e2e" build
+K8S=1.12 make -C "${TREE}/images/kubekins-e2e" build
+K8S=1.11 make -C "${TREE}/images/kubekins-e2e" build
+K8S=1.10 make -C "${TREE}/images/kubekins-e2e" build
 
 echo "TAG = ${TAG}"
 
@@ -67,7 +67,7 @@ git commit -am "Bump to gcr.io/k8s-testimages/kubekins-e2e:${TAG}-(master|experi
 # Bump kubeadm image
 
 TAG="${DATE}-$(git describe --tags --always --dirty)"
-make -C "${TREE}/images/kubeadm" push TAG="${TAG}"
+make -C "${TREE}/images/kubeadm" image TAG="${TAG}"
 
 $SED -i "s/\\/e2e-kubeadm:v.*$/\\/e2e-kubeadm:${TAG}/" "${TREE}/prow/config.yaml"
 find "${TREE}/config/jobs/" -type f -name \*.yaml -exec $SED -i "s/\\/e2e-kubeadm:v.*-\\(.*\)$/\\/e2e-kubeadm:${TAG}/" {} \;
