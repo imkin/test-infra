@@ -32,11 +32,11 @@ import collections
 
 
 class Version(object):
-    STABLE1 = "1.13"
-    STABLE2 = "1.12"
-    STABLE3 = "1.11"
-    STABLE4 = "1.10"
-    STABLE5 = "1.9"
+    STABLE1 = "1.14"
+    STABLE2 = "1.13"
+    STABLE3 = "1.12"
+    STABLE4 = "1.11"
+    STABLE5 = "1.10"
 
 # We do not use this yet in the script
 
@@ -54,6 +54,7 @@ RELEASE_VERSION_ROTATION_MAP = collections.OrderedDict([
     (Version.STABLE2, Version.STABLE1),
     (Version.STABLE3, Version.STABLE2),
     (Version.STABLE4, Version.STABLE3),
+    (Version.STABLE5, Version.STABLE4),
 ])
 # List of job config locations that need version rotation.
 # We might have to do more than just rotation in these job configs.# Assuming that the script is

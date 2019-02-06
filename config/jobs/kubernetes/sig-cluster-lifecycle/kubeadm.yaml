@@ -7,10 +7,10 @@ presubmits:
     skip_report: true
     run_if_changed: '^(cmd/kubeadm|build/debs|pkg/kubelet/certificate|cmd/kubelet/app).*$'
     skip_branches:
+    - release-1.14 # per-release job
     - release-1.13 # per-release job
     - release-1.12 # per-release job
     - release-1.11 # per-release job
-    - release-1.10 # per-release job
     decorate: true
     decoration_config:
       timeout: 4200000000000 # 70m
@@ -32,6 +32,53 @@ presubmits:
     spec:
       containers:
       - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-master
+        command:
+        - runner.sh
+        - /workspace/scenarios/kubernetes_e2e.py
+        args:
+        - --build=bazel
+        - --cluster=
+        - --extract=local
+        - --deployment=kubernetes-anywhere
+        - --gcp-zone=us-west1-b
+        - --ginkgo-parallel=30
+        - --kubeadm=pull
+        - --kubernetes-anywhere-kubernetes-version=ci-cross/latest
+        - --provider=skeleton
+        - --stage=gs://kubernetes-release-pull/ci/pull-kubernetes-e2e-kubeadm-gce
+        - --test_args=--ginkgo.focus=\[Conformance\] --ginkgo.skip=\[Slow\]|\[Serial\]|\[Disruptive\]|\[Flaky\] --minStartupPods=8
+        - --timeout=55m
+        env:
+        - name: SKIP_RELEASE_VALIDATION # See: https://github.com/kubernetes/kubernetes/pull/50391
+          value: "true"
+
+  - name: pull-kubernetes-e2e-kubeadm-gce
+    max_concurrency: 8
+    skip_report: true
+    run_if_changed: '^(cmd/kubeadm|build/debs|pkg/kubelet/certificate|cmd/kubelet/app).*$'
+    branches:
+    - release-1.14
+    labels:
+      preset-service-account: "true"
+      preset-k8s-ssh: "true"
+      preset-bazel-scratch-dir: "true"
+      preset-bazel-remote-cache-enabled: "true"
+      preset-pull-kubernetes-e2e: "true"
+    decorate: true
+    decoration_config:
+      timeout: 4200000000000 # 70m
+    extra_refs:
+    - org: kubernetes
+      repo: release
+      base_ref: master
+      path_alias: k8s.io/release
+    - org: kubernetes
+      repo: kubernetes-anywhere
+      base_ref: kubeadm-e2e
+      path_alias: k8s.io/kubernetes-anywhere
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.14
         command:
         - runner.sh
         - /workspace/scenarios/kubernetes_e2e.py
@@ -193,86 +240,12 @@ presubmits:
         - name: SKIP_RELEASE_VALIDATION # See: https://github.com/kubernetes/kubernetes/pull/50391
           value: "true"
 
-  - name: pull-kubernetes-e2e-kubeadm-gce
-    max_concurrency: 8
-    skip_report: true
-    run_if_changed: '^(cmd/kubeadm|build/debs|pkg/kubelet/certificate|cmd/kubelet/app).*$'
-    branches:
-    - release-1.10
-    labels:
-      preset-service-account: "true"
-      preset-k8s-ssh: "true"
-      preset-bazel-scratch-dir: "true"
-      preset-bazel-remote-cache-enabled: "true"
-      preset-pull-kubernetes-e2e: "true"
-    decorate: true
-    decoration_config:
-      timeout: 4200000000000 # 70m
-    extra_refs:
-    - org: kubernetes
-      repo: release
-      base_ref: master
-      path_alias: k8s.io/release
-    - org: kubernetes
-      repo: kubernetes-anywhere
-      base_ref: kubeadm-e2e
-      path_alias: k8s.io/kubernetes-anywhere
-    spec:
-      containers:
-      - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.10
-        command:
-        - runner.sh
-        - /workspace/scenarios/kubernetes_e2e.py
-        args:
-        - --build=bazel
-        - --cluster=
-        - --extract=local
-        - --deployment=kubernetes-anywhere
-        - --gcp-zone=us-west1-b
-        - --ginkgo-parallel=30
-        - --kubeadm=pull
-        - --kubernetes-anywhere-kubernetes-version=ci-cross/latest
-        - --provider=skeleton
-        - --stage=gs://kubernetes-release-pull/ci/pull-kubernetes-e2e-kubeadm-gce
-        - --test_args=--ginkgo.focus=\[Conformance\] --ginkgo.skip=\[Slow\]|\[Serial\]|\[Disruptive\]|\[Flaky\] --minStartupPods=8
-        - --timeout=55m
-        env:
-        - name: SKIP_RELEASE_VALIDATION # See: https://github.com/kubernetes/kubernetes/pull/50391
-          value: "true"
-
 periodics:
-- name: ci-kubernetes-e2e-kubeadm-gce-1-11
-  interval: 12h
-  labels:
-    preset-service-account: "true"
-    preset-k8s-ssh: "true"
-  spec:
-    containers:
-    - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-master
-      args:
-      - --repo=k8s.io/kubernetes=release-1.11
-      - --repo=k8s.io/kubernetes-anywhere=kubeadm-e2e
-      - --timeout=320
-      - --upload=gs://kubernetes-jenkins/logs
-      - --scenario=kubernetes_e2e
-      - --
-      - --cluster=
-      - --deployment=kubernetes-anywhere
-      - --extract=ci/latest-bazel-1.11
-      - --gcp-zone=us-west1-b
-      - --kubeadm=ci
-      - --kubernetes-anywhere-kubelet-ci-version=latest-bazel-1.11
-      - --kubernetes-anywhere-kubernetes-version=ci/latest-1.11
-      - --provider=skeleton
-      - --test_args=--ginkgo.focus=\[Conformance\]|\[Feature:BootstrapTokens\]|\[Feature:NodeAuthorizer\] --minStartupPods=8
-      - --timeout=300m
-
 - name: ci-kubernetes-e2e-kubeadm-gce-1-12
   interval: 12h
   labels:
     preset-service-account: "true"
     preset-k8s-ssh: "true"
-    preset-bazel-scratch-dir: "true"
   spec:
     containers:
     - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-master
@@ -317,6 +290,33 @@ periodics:
       - --kubeadm=ci
       - --kubernetes-anywhere-kubelet-ci-version=latest-bazel-1.13
       - --kubernetes-anywhere-kubernetes-version=ci/latest-1.13
+      - --provider=skeleton
+      - --test_args=--ginkgo.focus=\[Conformance\]|\[Feature:BootstrapTokens\]|\[Feature:NodeAuthorizer\] --minStartupPods=8
+      - --timeout=300m
+
+- name: ci-kubernetes-e2e-kubeadm-gce-1-14
+  interval: 12h
+  labels:
+    preset-service-account: "true"
+    preset-k8s-ssh: "true"
+    preset-bazel-scratch-dir: "true"
+  spec:
+    containers:
+    - image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-master
+      args:
+      - --repo=k8s.io/kubernetes=release-1.14
+      - --repo=k8s.io/kubernetes-anywhere=kubeadm-e2e
+      - --timeout=320
+      - --upload=gs://kubernetes-jenkins/logs
+      - --scenario=kubernetes_e2e
+      - --
+      - --cluster=
+      - --deployment=kubernetes-anywhere
+      - --extract=ci/latest-bazel-1.14
+      - --gcp-zone=us-west1-b
+      - --kubeadm=ci
+      - --kubernetes-anywhere-kubelet-ci-version=latest-bazel-1.14
+      - --kubernetes-anywhere-kubernetes-version=ci/latest-1.14
       - --provider=skeleton
       - --test_args=--ginkgo.focus=\[Conformance\]|\[Feature:BootstrapTokens\]|\[Feature:NodeAuthorizer\] --minStartupPods=8
       - --timeout=300m

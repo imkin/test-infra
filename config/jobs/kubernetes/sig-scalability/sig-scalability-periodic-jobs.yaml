@@ -145,7 +145,7 @@ periodics:
       - --cluster=gke-scale-cluster
       - --deployment=gke
       # TODO(wojtek-t): get rid of this once GKE is fixed in master
-      - --extract=ci/latest-1.13
+      - --extract=ci/latest-1.14
       - --gcp-cloud-sdk=gs://cloud-sdk-testing/ci/staging
       - --gcp-node-image=gci
       - --gcp-project=kubernetes-scale
@@ -192,7 +192,7 @@ periodics:
       - --cluster=gke-regional-cluster
       - --deployment=gke
       # TODO(wojtek-t): get rid of this once GKE is fixed in master
-      - --extract=ci/latest-1.13
+      - --extract=ci/latest-1.14
       - --gcp-cloud-sdk=gs://cloud-sdk-testing/ci/staging
       - --gcp-node-image=gci
       - --gcp-project=kubernetes-scale
@@ -235,7 +235,7 @@ periodics:
       - --cluster=gke-scale-cluster
       - --deployment=gke
       # TODO(wojtek-t): get rid of this once GKE is fixed in master
-      - --extract=ci/latest-1.13
+      - --extract=ci/latest-1.14
       - --gcp-cloud-sdk=gs://cloud-sdk-testing/ci/staging
       - --gcp-node-image=gci
       - --gcp-project=kubernetes-scale
@@ -272,7 +272,7 @@ periodics:
       - --cluster=gke-scale-cluster
       - --deployment=gke
       # TODO(wojtek-t): get rid of this once GKE is fixed in master
-      - --extract=ci/latest-1.13
+      - --extract=ci/latest-1.14
       - --gcp-cloud-sdk=gs://cloud-sdk-testing/ci/staging
       - --gcp-node-image=gci
       - --gcp-project=kubernetes-scale
@@ -354,7 +354,7 @@ periodics:
       - --scenario=kubernetes_e2e
       - --
       - --cluster=kubemark-latest
-      - --extract=ci/latest-1.12
+      - --extract=ci/latest-1.13
       - --gcp-node-size=n1-standard-2
       - --gcp-nodes=1
       - --gcp-project-type=scalability-project

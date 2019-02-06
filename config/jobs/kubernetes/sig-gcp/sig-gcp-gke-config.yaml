@@ -7,8 +7,8 @@ presubmits:
     # TODO(bentheelder): enforce this pattern (skip all releases) or implement
     # something better like https://github.com/kubernetes/test-infra/pull/4918
     skip_branches:
-    - release-1.13 # per-release image
-    - release-1.10 # per-release image
+    - release-1.14 # per-release image
+    - release-1.11 # per-release image
     labels:
       preset-service-account: "true"
       preset-k8s-ssh: "true"
@@ -50,7 +50,7 @@ presubmits:
     always_run: false
     optional: true
     branches:
-    - release-1.13 # per-release image
+    - release-1.14 # per-release image
     labels:
       preset-service-account: "true"
       preset-k8s-ssh: "true"
@@ -84,7 +84,7 @@ presubmits:
         # Bazel needs privileged mode in order to sandbox builds.
         securityContext:
           privileged: true
-        image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.13
+        image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.14
         resources:
           requests:
             memory: "6Gi"
@@ -92,7 +92,7 @@ presubmits:
     always_run: false
     optional: true
     branches:
-    - release-1.10 # per-release image
+    - release-1.11 # per-release image
     labels:
       preset-service-account: "true"
       preset-k8s-ssh: "true"
@@ -126,7 +126,7 @@ presubmits:
         # Bazel needs privileged mode in order to sandbox builds.
         securityContext:
           privileged: true
-        image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.10
+        image: gcr.io/k8s-testimages/kubekins-e2e:v20190201-234c5ddcf-1.11
         resources:
           requests:
             memory: "6Gi"
